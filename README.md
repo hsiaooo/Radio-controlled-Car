@@ -1,5 +1,6 @@
 # Radio-controlled-Car
 > This repo is for my course ` Mechanical system design and practice` in NTUST.
+> The topic of competition is *極速快遞*.
 ---
 <p align="center">
 <img src="img/exterior.jpg" alt="simulation"/>

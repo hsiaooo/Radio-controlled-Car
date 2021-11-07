@@ -2,12 +2,12 @@
 *.swp
 *.DS_Store
 
+
 # files
 code/.idea/*
-code/carL.py/*
 code/carR.py/*
+code/carL.py/*
 code/control.py/*
 code/control1.py/*
 code/control2.py/*
 pyPS4Controller-master/*
-report/*
