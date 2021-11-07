@@ -1,171 +1,23 @@
-from pyPS4Controller.controller import Controller
-import time
-import RPi.GPIO as GPIO
 import cv2
+import time
 import numpy as np
-
-
-# --------------------------------DC_Motor----------------------------------------
-class DC_Motor:
-    def __init__(self, ena, in1, in2, enb, in3, in4, enc, in5, in6, end, in7, in8):
-        self.ENA = ena
-        self.IN1 = in1
-        self.IN2 = in2
-        self.ENB = enb
-        self.IN3 = in3
-        self.IN4 = in4
-        self.ENC = enc
-        self.IN5 = in5
-        self.IN6 = in6
-        self.END = end
-        self.IN7 = in7
-        self.IN8 = in8
-        # 設定後右輪
-        GPIO.setup(self.ENA, GPIO.OUT, initial=GPIO.LOW)
-        # 利用PWN來改變車子馬達轉速（改變車子速度），初始值為全速100
-        self.ENA_SPEED = GPIO.PWM(self.ENA, 600)
-        self.ENA_SPEED.start(0)
-        self.ENA_SPEED.ChangeDutyCycle(100)
-        GPIO.setup(self.IN1, GPIO.OUT, initial=GPIO.LOW)
-        GPIO.setup(self.IN2, GPIO.OUT, initial=GPIO.LOW)
-        # 設定前右輪
-        GPIO.setup(self.ENC, GPIO.OUT, initial=GPIO.LOW)
-        self.ENC_SPEED = GPIO.PWM(self.ENC, 600)
-        self.ENC_SPEED.start(0)
-        self.ENC_SPEED.ChangeDutyCycle(100)
-        GPIO.setup(self.IN5, GPIO.OUT, initial=GPIO.LOW)
-        GPIO.setup(self.IN6, GPIO.OUT, initial=GPIO.LOW)
-        # 設定後左輪
-        GPIO.setup(self.ENB, GPIO.OUT, initial=GPIO.LOW)
-        self.ENB_SPEED = GPIO.PWM(self.ENB, 600)
-        self.ENB_SPEED.start(0)
-        self.ENB_SPEED.ChangeDutyCycle(100)
-        GPIO.setup(self.IN3, GPIO.OUT, initial=GPIO.LOW)
-        GPIO.setup(self.IN4, GPIO.OUT, initial=GPIO.LOW)
-        # 設定前左輪
-        GPIO.setup(self.END, GPIO.OUT, initial=GPIO.LOW)
-        self.END_SPEED = GPIO.PWM(self.END, 600)
-        self.END_SPEED.start(0)
-        self.END_SPEED.ChangeDutyCycle(100)
-        GPIO.setup(self.IN7, GPIO.OUT, initial=GPIO.LOW)
-        GPIO.setup(self.IN8, GPIO.OUT, initial=GPIO.LOW)
-
-    # Speed
-    def right_speed(self, speed):
-        self.ENA_SPEED.ChangeDutyCycle(speed)
-        self.END_SPEED.ChangeDutyCycle(speed)
-
-    def left_speed(self, speed):
-        self.ENB_SPEED.ChangeDutyCycle(speed)
-        self.ENC_SPEED.ChangeDutyCycle(speed)
-
-    def speed(self, speed):
-        self.right_speed(speed)
-        self.left_speed(speed)
-
-    # Move
-    def forward(self):
-        GPIO.output(self.ENA, True)
-        GPIO.output(self.ENB, True)
-        GPIO.output(self.ENC, True)
-        GPIO.output(self.END, True)
-        GPIO.output(self.IN1, True)
-        GPIO.output(self.IN2, False)
-        GPIO.output(self.IN3, True)
-        GPIO.output(self.IN4, False)
-        GPIO.output(self.IN5, True)
-        GPIO.output(self.IN6, False)
-        GPIO.output(self.IN7, True)
-        GPIO.output(self.IN8, False)
-
-    def backward(self):
-        GPIO.output(self.ENA, True)
-        GPIO.output(self.ENB, True)
-        GPIO.output(self.ENC, True)
-        GPIO.output(self.END, True)
-        GPIO.output(self.IN1, False)
-        GPIO.output(self.IN2, True)
-        GPIO.output(self.IN3, False)
-        GPIO.output(self.IN4, True)
-        GPIO.output(self.IN5, False)
-        GPIO.output(self.IN6, True)
-        GPIO.output(self.IN7, False)
-        GPIO.output(self.IN8, True)
-
-    def turn_left(self):
-        GPIO.output(self.ENA, True)
-        GPIO.output(self.ENB, True)
-        GPIO.output(self.ENC, True)
-        GPIO.output(self.END, True)
-        GPIO.output(self.IN1, True)
-        GPIO.output(self.IN2, False)
-        GPIO.output(self.IN3, False)
-        GPIO.output(self.IN4, True)
-        GPIO.output(self.IN5, False)  # 先測試看一輪動不動得了
-        GPIO.output(self.IN6, True)
-        GPIO.output(self.IN7, True)
-        GPIO.output(self.IN8, False)
-
-    def turn_right(self):
-        GPIO.output(self.ENA, True)
-        GPIO.output(self.ENB, True)
-        GPIO.output(self.ENC, True)
-        GPIO.output(self.END, True)
-        GPIO.output(self.IN1, False)
-        GPIO.output(self.IN2, True)
-        GPIO.output(self.IN3, True)
-        GPIO.output(self.IN4, False)
-        GPIO.output(self.IN5, True)
-        GPIO.output(self.IN6, False)
-        GPIO.output(self.IN7, False)  # 先測試一輪動不動得了
-        GPIO.output(self.IN8, True)
-
-    def stop(self):
-        GPIO.output(self.ENA, True)
-        GPIO.output(self.ENB, True)
-        GPIO.output(self.ENC, True)
-        GPIO.output(self.END, True)
-        GPIO.output(self.IN1, False)
-        GPIO.output(self.IN2, False)
-        GPIO.output(self.IN3, False)
-        GPIO.output(self.IN4, False)
-        GPIO.output(self.IN5, False)
-        GPIO.output(self.IN6, False)
-        GPIO.output(self.IN7, False)
-        GPIO.output(self.IN8, False)
-
-
-# --------------------------------Servo_Mptor------------------------------------------
-def servo1_angle_to_duty_cycle(servo1_angle):
-    servo1_duty_cycle = (0.05 * PWM_FREQ) + (0.19 * PWM_FREQ * servo1_angle / 180)
-    return servo1_duty_cycle
-
-
-def servo2_angle_to_duty_cycle(servo1_angle=0):
-    servo2_duty_cycle = (0.05 * PWM_FREQ) + (0.19 * PWM_FREQ * servo1_angle / 180)
-    return servo2_duty_cycle
-
-
-def servo3_angle_to_duty_cycle(servo1_angle=0):
-    servo3_duty_cycle = (0.05 * PWM_FREQ) + (0.19 * PWM_FREQ * servo1_angle / 180)
-    return servo3_duty_cycle
-
-
-def servo4_angle_to_duty_cycle(servo1_angle=0):
-    servo4_duty_cycle = (0.05 * PWM_FREQ) + (0.19 * PWM_FREQ * servo1_angle / 180)
-    return servo4_duty_cycle
+import RPi.GPIO as GPIO
+from DC_Motor import DC_motor
+from Servo_Motor import Servo_motor
+from pyPS4Controller.controller import Controller
 
 
 GPIO.setmode(GPIO.BOARD)
 GPIO.setwarnings(False)
 
 # DC
-motor = DC_Motor(11, 13, 15, 33, 37, 35, 36, 38, 40, 8, 12, 10)
+motor = DC_motor(11, 13, 15, 33, 37, 35, 36, 38, 40, 8, 12, 10)
 motor_speed = 100
 motor.speed(motor_speed)
 
 # Servo
 PWM_FREQ = 50
+servo_motor = Servo_motor(PWM_FREQ)
 servo1 = 16
 servo2 = 18
 servo3 = 31
@@ -231,14 +83,14 @@ class MyController(Controller):
             servo1_angle += 5
             if servo1_angle > 180:
                 servo1_angle = 180
-            dc1 = servo1_angle_to_duty_cycle(servo1_angle)
+            dc1 = servo_motor.servo1_angle_to_duty_cycle(servo1_angle)
             pwm1.ChangeDutyCycle(dc1)
             print('角度={: >3}, 工作週期={:.2f}'.format(servo1_angle, dc1))
             time.sleep(0.2)
 
     def on_L1_release(self):
         global servo1_angle
-        pwm1.ChangeDutyCycle(servo1_angle_to_duty_cycle(servo1_angle))
+        pwm1.ChangeDutyCycle(servo_motor.servo1_angle_to_duty_cycle(servo1_angle))
 
     def on_L2_press(self, value):
         global servo1_angle
@@ -247,14 +99,14 @@ class MyController(Controller):
                 servo1_angle -= 5
                 if servo1_angle < 0:
                     servo1_angle = 0
-                dc1 = servo1_angle_to_duty_cycle(servo1_angle)
+                dc1 = servo_motor.servo1_angle_to_duty_cycle(servo1_angle)
                 pwm1.ChangeDutyCycle(dc1)
                 print('角度={: >3}, 工作週期={:.2f}'.format(servo1_angle, dc1))
                 time.sleep(0.2)
 
     def on_L2_release(self):
         global servo1_angle
-        pwm1.ChangeDutyCycle(servo1_angle_to_duty_cycle(servo1_angle))
+        pwm1.ChangeDutyCycle(servo_motor.servo1_angle_to_duty_cycle(servo1_angle))
 
     def on_R1_press(self):
         global servo2_angle
@@ -262,14 +114,14 @@ class MyController(Controller):
             servo2_angle += 5
             if servo2_angle > 180:
                 servo2_angle = 180
-            dc2 = servo2_angle_to_duty_cycle(servo2_angle)
+            dc2 = servo_motor.servo2_angle_to_duty_cycle(servo2_angle)
             pwm2.ChangeDutyCycle(dc2)
             print('角度={: >3}, 工作週期={:.2f}'.format(servo2_angle, dc2))
             time.sleep(0.2)
 
     def on_R1_release(self):
         global servo2_angle
-        pwm2.ChangeDutyCycle(servo2_angle_to_duty_cycle(servo2_angle))
+        pwm2.ChangeDutyCycle(servo_motor.servo2_angle_to_duty_cycle(servo2_angle))
 
     def on_R2_press(self, value):
         global servo2_angle
@@ -278,14 +130,14 @@ class MyController(Controller):
                 servo2_angle -= 5
                 if servo2_angle < 0:
                     servo2_angle = 0
-                dc2 = servo2_angle_to_duty_cycle(servo2_angle)
+                dc2 = servo_motor.servo2_angle_to_duty_cycle(servo2_angle)
                 pwm2.ChangeDutyCycle(dc2)
                 print('角度={: >3}, 工作週期={:.2f}'.format(servo2_angle, dc2))
                 time.sleep(0.2)
 
     def on_R2_release(self):
         global servo2_angle
-        pwm2.ChangeDutyCycle(servo2_angle_to_duty_cycle(servo2_angle))
+        pwm2.ChangeDutyCycle(servo_motor.servo2_angle_to_duty_cycle(servo2_angle))
 
     def on_up_arrow_press(self):
         global servo3_angle
@@ -293,14 +145,14 @@ class MyController(Controller):
             servo3_angle += 5
             if servo3_angle > 180:
                 servo3_angle = 180
-            dc3 = servo3_angle_to_duty_cycle(servo3_angle)
+            dc3 = servo_motor.servo3_angle_to_duty_cycle(servo3_angle)
             pwm3.ChangeDutyCycle(dc3)
             print('角度={: >3}, 工作週期={:.2f}'.format(servo3_angle, dc3))
             time.sleep(0.2)
 
     def on_up_down_arrow_release(self):
         global servo3_angle
-        pwm3.ChangeDutyCycle(servo3_angle_to_duty_cycle(servo3_angle))
+        pwm3.ChangeDutyCycle(servo_motor.servo3_angle_to_duty_cycle(servo3_angle))
 
     def on_down_arrow_press(self):
         global servo3_angle
@@ -308,7 +160,7 @@ class MyController(Controller):
             servo3_angle -= 5
             if servo3_angle < 0:
                 servo3_angle = 0
-            dc3 = servo3_angle_to_duty_cycle(servo3_angle)
+            dc3 = servo_motor.servo3_angle_to_duty_cycle(servo3_angle)
             pwm3.ChangeDutyCycle(dc3)
             print('角度={: >3}, 工作週期={:.2f}'.format(servo3_angle, dc3))
             time.sleep(0.2)
@@ -319,14 +171,14 @@ class MyController(Controller):
             servo4_angle -= 5
             if servo4_angle < 1:
                 servo4_angle = 1
-            dc4 = servo4_angle_to_duty_cycle(servo4_angle)
+            dc4 = servo_motor.servo4_angle_to_duty_cycle(servo4_angle)
             pwm4.ChangeDutyCycle(dc4)
             print('角度={: >3}, 工作週期={:.2f}'.format(servo4_angle, dc4))
             time.sleep(0.2)
 
     def on_left_right_arrow_release(self):
         global servo4_angle
-        pwm4.ChangeDutyCycle(servo4_angle_to_duty_cycle(servo4_angle))
+        pwm4.ChangeDutyCycle(servo_motor.servo4_angle_to_duty_cycle(servo4_angle))
 
     def on_right_arrow_press(self):
         global servo4_angle
@@ -334,7 +186,7 @@ class MyController(Controller):
             servo4_angle += 5
             if servo4_angle > 180:
                 servo4_angle = 180
-            dc4 = servo4_angle_to_duty_cycle(servo4_angle)
+            dc4 = servo_motor.servo4_angle_to_duty_cycle(servo4_angle)
             pwm4.ChangeDutyCycle(dc4)
             print('角度={: >3}, 工作週期={:.2f}'.format(servo4_angle, dc4))
             time.sleep(0.2)
