@@ -1,6 +1,8 @@
+# file name extension
 *.swp
 *.DS_Store
 
+# files
 code/.idea/*
 code/carL.py/*
 code/carR.py/*
