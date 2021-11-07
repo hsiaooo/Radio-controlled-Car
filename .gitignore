@@ -2,5 +2,10 @@
 *.DS_Store
 
 code/.idea/*
+code/carL.py/*
+code/carR.py/*
+code/control.py/*
+code/control1.py/*
+code/control2.py/*
 pyPS4Controller-master/*
 report/*

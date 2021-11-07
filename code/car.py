@@ -6,7 +6,7 @@ import numpy as np
 
 #--------------------------------DC_Motor----------------------------------------
 class DC_Motor:
-    def __init__(self, ena, in1, in2, enb, in3, in4, enc, in5, in6, end, in7, in8, ene, in9, in10, enf, in11, in12):
+    def __init__(self, ena, in1, in2, enb, in3, in4, enc, in5, in6, end, in7, in8):
         self.ENA = ena
         self.IN1 = in1
         self.IN2 = in2
@@ -19,12 +19,6 @@ class DC_Motor:
         self.END = end
         self.IN7 = in7
         self.IN8 = in8
-        self.ENE = ene
-        self.IN9 = in9
-        self.IN10 = in10
-        self.ENF = enf
-        self.IN11 = in11
-        self.IN12 = in12
         # 設定後右輪
         GPIO.setup(self.ENA, GPIO.OUT, initial=GPIO.LOW)
         # 利用PWN來改變車子馬達轉速（改變車子速度），初始值為全速100
@@ -54,20 +48,6 @@ class DC_Motor:
         self.END_SPEED.ChangeDutyCycle(100)
         GPIO.setup(self.IN7, GPIO.OUT, initial=GPIO.LOW)
         GPIO.setup(self.IN8, GPIO.OUT, initial=GPIO.LOW)
-        # 設定下面拉門馬達
-        GPIO.setup(self.ENE, GPIO.OUT, initial=GPIO.LOW)
-        self.ENE_SPEED = GPIO.PWM(self.ENE, 600)
-        self.ENE_SPEED.start(0)
-        self.ENE_SPEED.ChangeDutyCycle(100)
-        GPIO.setup(self.IN9, GPIO.OUT, initial=GPIO.LOW)
-        GPIO.setup(self.IN10, GPIO.OUT, initial=GPIO.LOW)
-        # 設定上面拉門馬達
-        GPIO.setup(self.ENF, GPIO.OUT, initial=GPIO.LOW)
-        self.ENF_SPEED = GPIO.PWM(self.ENF, 600)
-        self.ENF_SPEED.start(0)
-        self.ENF_SPEED.ChangeDutyCycle(100)
-        GPIO.setup(self.IN11, GPIO.OUT, initial=GPIO.LOW)
-        GPIO.setup(self.IN12, GPIO.OUT, initial=GPIO.LOW)
     #Speed
     def right_speed(self, speed):
         self.ENA_SPEED.ChangeDutyCycle(speed)
@@ -151,8 +131,6 @@ class DC_Motor:
         GPIO.output(self.IN6, False)
         GPIO.output(self.IN7, False)
         GPIO.output(self.IN8, False)
-
-    
 
 #--------------------------------Servo_Mptor------------------------------------------
 def servo1_angle_to_duty_cycle(servo1_angle):
