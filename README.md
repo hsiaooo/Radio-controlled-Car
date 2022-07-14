@@ -22,4 +22,13 @@
 </p>
 <p align="center">Three view drawing</p>
 
+## Install
+
+```
+pip3 install pyPS4Controller
+pip3 install RPi.GPIO
+pip3 install cv2
+pip3 install numpy
+pip3 install time
+```
 
