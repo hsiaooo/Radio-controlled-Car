@@ -22,7 +22,7 @@
 </p>
 <p align="center">Three view drawing</p>
 
-## Install package
+## Requirment
 
 ```
 pip3 install pyPS4Controller
